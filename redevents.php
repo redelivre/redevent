@@ -97,10 +97,12 @@ class Redevents {
 
     $columns = array(
         "cb" => "<input type=\"checkbox\" />",
-        "title" => "Event",
-        "tf_col_ev_cat" => "Category",
-        "tf_col_ev_date" => "Dates",
-        "tf_col_ev_times" => "Times",
+        "title" => "Evento",
+        "tf_col_ev_cat" => "Categoria",
+        "tf_col_ev_date" => "Data",
+        "tf_col_ev_times" => "Horas",
+        "tf_col_ev_city" => "Cidade",
+        "tf_col_ev_state" => "Estado",
         //"tf_col_ev_thumb" => "Thumbnail",
         //"tf_col_ev_desc" => "Description",
         );
@@ -135,6 +137,16 @@ class Redevents {
           $startdate = date("F j, Y", $startd);
           $enddate = date("F j, Y", $endd);
           echo $startdate . '<br /><em>' . $enddate . '</em>';
+      break;
+      case "tf_col_ev_city":
+          // - show dates -
+          $city = $custom["tf_events_city"][0];
+          echo '<em>' . $city . '</em>';
+      break;
+      case "tf_col_ev_state":
+          // - show dates -
+          $state = $custom["tf_events_state"][0];
+          echo '<em>' . $state . '</em>';
       break;
       case "tf_col_ev_times":
           // - show times -
@@ -336,9 +348,6 @@ function events_scripts() {
     wp_enqueue_script('ui-datepicker', plugin_dir_url( __FILE__ ) . 'js/jquery.ui.datepicker.js');
     wp_enqueue_script('custom_script', plugin_dir_url( __FILE__ ) .'js/pubforce-admin.js', array('jquery'));
 }
-
-
-
 
 }
 
