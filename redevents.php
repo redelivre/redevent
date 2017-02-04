@@ -178,176 +178,176 @@ class Redevents {
     add_meta_box('tf_events_meta', 'Eventos', array( $this , 'tf_events_meta' ), 'tf_events');
 }
 
-function tf_events_meta () {
+  function tf_events_meta () {
 
-// - grab data -
+  // - grab data -
 
-global $post;
-$custom = get_post_custom($post->ID);
+  global $post;
+  $custom = get_post_custom($post->ID);
 
-//var_dump($custom);
-if (array_key_exists('tf_events_startdate', $custom)){
-  $meta_sd = $custom["tf_events_startdate"][0];
-  $meta_st = $meta_sd;
-}
-else{
-  $meta_sd = null;
-}
+  //var_dump($custom);
+  if (array_key_exists('tf_events_startdate', $custom)){
+    $meta_sd = $custom["tf_events_startdate"][0];
+    $meta_st = $meta_sd;
+  }
+  else{
+    $meta_sd = null;
+  }
 
-if (array_key_exists('tf_events_enddate', $custom)){
-  $meta_ed = $custom["tf_events_enddate"][0];
-  $meta_et = $meta_ed;
-}
+  if (array_key_exists('tf_events_enddate', $custom)){
+    $meta_ed = $custom["tf_events_enddate"][0];
+    $meta_et = $meta_ed;
+  }
 
-if (array_key_exists('tf_events_city', $custom)){
-  $city = $custom["tf_events_city"][0];
-}
-else{
-  $city = "";
-}
+  if (array_key_exists('tf_events_city', $custom)){
+    $city = $custom["tf_events_city"][0];
+  }
+  else{
+    $city = "";
+  }
 
-if (array_key_exists('tf_events_state', $custom)){
-  $state = $custom["tf_events_state"][0];
-}
-else{
-  $state = "";
-}
+  if (array_key_exists('tf_events_state', $custom)){
+    $state = $custom["tf_events_state"][0];
+  }
+  else{
+    $state = "";
+  }
 
-// - grab wp time format -
+  // - grab wp time format -
 
-$date_format = get_option('date_format'); // Not required in my code
-$time_format = get_option('time_format');
+  $date_format = get_option('date_format'); // Not required in my code
+  $time_format = get_option('time_format');
 
-// - populate today if empty, 00:00 for time -
+  // - populate today if empty, 00:00 for time -
 
-if ($meta_sd == null) { $meta_sd = time(); $meta_ed = $meta_sd; $meta_st = 0; $meta_et = 0;}
+  if ($meta_sd == null) { $meta_sd = time(); $meta_ed = $meta_sd; $meta_st = 0; $meta_et = 0;}
 
-// - convert to pretty formats -
+  // - convert to pretty formats -
 
-$clean_sd = date("D, M d, Y", $meta_sd);
-$clean_ed = date("D, M d, Y", $meta_ed);
-$clean_st = date($time_format, $meta_st);
-$clean_et = date($time_format, $meta_et);
+  $clean_sd = date("D, M d, Y", $meta_sd);
+  $clean_ed = date("D, M d, Y", $meta_ed);
+  $clean_st = date($time_format, $meta_st);
+  $clean_et = date($time_format, $meta_et);
 
-// - security -
+  // - security -
 
-echo '<input type="hidden" name="tf-events-nonce" id="tf-events-nonce" value="' .
-wp_create_nonce( 'tf-events-nonce' ) . '" />';
+  echo '<input type="hidden" name="tf-events-nonce" id="tf-events-nonce" value="' .
+  wp_create_nonce( 'tf-events-nonce' ) . '" />';
 
-// - output -
+  // - output -
 
-?>
-<div class="tf-meta">
-<ul>
-    <li><label>Data de Inicio</label>
-      <p><input name="tf_events_startdate" class="tfdate calendar" value="<?php echo $clean_sd; ?>" /></p>
-    </li>
-    <li><label>Horario de Inicio</label>
-      <p><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /></p>
-      <em>Use o formato de 24h</em>
-    </li>
-    <li><label>Data de Termino</label>
-      <p><input name="tf_events_enddate" class="tfdate" value="<?php echo $clean_ed; ?>" /></p>
-    </li>
+  ?>
+  <div class="tf-meta">
+  <ul>
+      <li><label>Data de Inicio</label>
+        <p><input name="tf_events_startdate" class="tfdate calendar" value="<?php echo $clean_sd; ?>" /></p>
+      </li>
+      <li><label>Horario de Inicio</label>
+        <p><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /></p>
+        <em>Use o formato de 24h</em>
+      </li>
+      <li><label>Data de Termino</label>
+        <p><input name="tf_events_enddate" class="tfdate" value="<?php echo $clean_ed; ?>" /></p>
+      </li>
 
-    <li><label>Horario de Termino</label>
-      <p><input name="tf_events_endtime" value="<?php echo $clean_et; ?>" /></p><em>Use o formato de 24h</em>
-    </li>
+      <li><label>Horario de Termino</label>
+        <p><input name="tf_events_endtime" value="<?php echo $clean_et; ?>" /></p><em>Use o formato de 24h</em>
+      </li>
 
-    <li><label>Cidade</label>
-      <p><input name="tf_events_city" value="<?php echo $city; ?>" /></p>
-    </li>
+      <li><label>Cidade</label>
+        <p><input name="tf_events_city" value="<?php echo $city; ?>" /></p>
+      </li>
 
-    <li><label>Estado</label>
-      <p><input name="tf_events_state" value="<?php echo $state; ?>" /></p>
-    </li>
-</ul>
-</div>
-<?php
-}
+      <li><label>Estado</label>
+        <p><input name="tf_events_state" value="<?php echo $state; ?>" /></p>
+      </li>
+  </ul>
+  </div>
+  <?php
+  }
 
-function save_tf_events(){
+  function save_tf_events(){
 
-global $post;
+  global $post;
 
-// - still require nonce
+  // - still require nonce
 
-if ( !wp_verify_nonce( $_POST['tf-events-nonce'], 'tf-events-nonce' )) {
-    return $post->ID;
-}
+  if ( !wp_verify_nonce( $_POST['tf-events-nonce'], 'tf-events-nonce' )) {
+      return $post->ID;
+  }
 
-if ( !current_user_can( 'edit_post', $post->ID ))
-    return $post->ID;
+  if ( !current_user_can( 'edit_post', $post->ID ))
+      return $post->ID;
 
-// - convert back to unix & update post
+  // - convert back to unix & update post
 
-if(!isset($_POST["tf_events_startdate"])):
-return $post;
-endif;
-$updatestartd = strtotime ( $_POST["tf_events_startdate"] . $_POST["tf_events_starttime"] );
-update_post_meta($post->ID, "tf_events_startdate", $updatestartd );
+  if(!isset($_POST["tf_events_startdate"])):
+  return $post;
+  endif;
+  $updatestartd = strtotime ( $_POST["tf_events_startdate"] . $_POST["tf_events_starttime"] );
+  update_post_meta($post->ID, "tf_events_startdate", $updatestartd );
 
-if(!isset($_POST["tf_events_enddate"])):
-return $post;
-endif;
-$updateendd = strtotime ( $_POST["tf_events_enddate"] . $_POST["tf_events_endtime"]);
-update_post_meta($post->ID, "tf_events_enddate", $updateendd );
+  if(!isset($_POST["tf_events_enddate"])):
+  return $post;
+  endif;
+  $updateendd = strtotime ( $_POST["tf_events_enddate"] . $_POST["tf_events_endtime"]);
+  update_post_meta($post->ID, "tf_events_enddate", $updateendd );
 
-if(!isset($_POST["tf_events_city"])):
-return $post;
-endif;
-$city = isset($_POST["tf_events_city"])? $_POST["tf_events_city"]: "";
-update_post_meta($post->ID, "tf_events_city", $city);
+  if(!isset($_POST["tf_events_city"])):
+  return $post;
+  endif;
+  $city = isset($_POST["tf_events_city"])? $_POST["tf_events_city"]: "";
+  update_post_meta($post->ID, "tf_events_city", $city);
 
-if(!isset($_POST["tf_events_state"])):
-return $post;
-endif;
-$city = isset($_POST["tf_events_state"])? $_POST["tf_events_state"]: "";
-update_post_meta($post->ID, "tf_events_state", $city);
+  if(!isset($_POST["tf_events_state"])):
+  return $post;
+  endif;
+  $city = isset($_POST["tf_events_state"])? $_POST["tf_events_state"]: "";
+  update_post_meta($post->ID, "tf_events_state", $city);
 
-}
+  }
 
-function events_updated_messages( $messages ) {
+  function events_updated_messages( $messages ) {
 
-  global $post, $post_ID;
+    global $post, $post_ID;
 
-  $messages['tf_events'] = array(
-    0 => '', // Unused. Messages start at index 1.
-    1 => sprintf( __('Evento atualizado. <a href="%s">View item</a>'), esc_url( get_permalink($post_ID) ) ),
-    2 => __('Campo personalizado atualizado.'),
-    3 => __('Campo personalizado removido.'),
-    4 => __('Evento atualizado.'),
-    /* translators: %s: date and time of the revision */
-    5 => isset($_GET['revision']) ? sprintf( __('Evento recuperado para revisão de %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-    6 => sprintf( __('Evento publicado. <a href="%s">View event</a>'), esc_url( get_permalink($post_ID) ) ),
-    7 => __('Evento salvo.'),
-    8 => sprintf( __('Evento submetido. <a target="_blank" href="%s">Previsualizar evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
-    9 => sprintf( __('Evento agendado para: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Previsualizar evento</a>'),
-      // translators: Publish box date format, see http://php.net/date
-      date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
-    10 => sprintf( __('Rascunho de Evento atualizado. <a target="_blank" href="%s">Previsualizar Evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
-  );
+    $messages['tf_events'] = array(
+      0 => '', // Unused. Messages start at index 1.
+      1 => sprintf( __('Evento atualizado. <a href="%s">View item</a>'), esc_url( get_permalink($post_ID) ) ),
+      2 => __('Campo personalizado atualizado.'),
+      3 => __('Campo personalizado removido.'),
+      4 => __('Evento atualizado.'),
+      /* translators: %s: date and time of the revision */
+      5 => isset($_GET['revision']) ? sprintf( __('Evento recuperado para revisão de %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+      6 => sprintf( __('Evento publicado. <a href="%s">View event</a>'), esc_url( get_permalink($post_ID) ) ),
+      7 => __('Evento salvo.'),
+      8 => sprintf( __('Evento submetido. <a target="_blank" href="%s">Previsualizar evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
+      9 => sprintf( __('Evento agendado para: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Previsualizar evento</a>'),
+        // translators: Publish box date format, see http://php.net/date
+        date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
+      10 => sprintf( __('Rascunho de Evento atualizado. <a target="_blank" href="%s">Previsualizar Evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
+    );
 
-  return $messages;
-}
+    return $messages;
+  }
 
-function events_styles() {
-    global $post_type;
-    if( 'tf_events' != $post_type )
-        return;
-    wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/jquery-ui-1.8.9.custom.css');
-    wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/tf-functions.css');
+  function events_styles() {
+      global $post_type;
+      if( 'tf_events' != $post_type )
+          return;
+      wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/jquery-ui-1.8.9.custom.css');
+      wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/tf-functions.css');
 
-}
+  }
 
-function events_scripts() {
-    global $post_type;
-    if( 'tf_events' != $post_type )
-        return;
-    wp_enqueue_script('jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui-1.8.9.custom.min.js', array('jquery'));
-    wp_enqueue_script('ui-datepicker', plugin_dir_url( __FILE__ ) . 'js/jquery.ui.datepicker.js');
-    wp_enqueue_script('custom_script', plugin_dir_url( __FILE__ ) .'js/pubforce-admin.js', array('jquery'));
-}
+  function events_scripts() {
+      global $post_type;
+      if( 'tf_events' != $post_type )
+          return;
+      wp_enqueue_script('jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui-1.8.9.custom.min.js', array('jquery'));
+      wp_enqueue_script('ui-datepicker', plugin_dir_url( __FILE__ ) . 'js/jquery.ui.datepicker.js');
+      wp_enqueue_script('custom_script', plugin_dir_url( __FILE__ ) .'js/pubforce-admin.js', array('jquery'));
+  }
 
 }
 
