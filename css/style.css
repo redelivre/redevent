@@ -1,0 +1,6 @@
+/* Columns CPT Events */
+
+th#tf_col_ev_date, th#tf_col_ev_cat {width:150px}
+td.tf_col_ev_date em {color:gray;}
+th#tf_col_ev_times {width:150px}
+th#tf_col_ev_thumb {width:100px}
