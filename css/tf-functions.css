@@ -21,11 +21,3 @@ th#tf_col_menu_cat,th#tf_col_menu_title,th#tf_col_menu_size{width:150px}
 .tf-meta ul li label { width: 100px; display:block; float:left; padding-top:4px; }
 .tf-meta ul li input { width:125px; display:block; float:left; }
 .tf-meta ul li em { width: 200px; display:block; float:left; color:gray; margin-left:10px; padding-top: 4px}
-
-.calendar:before {
-    content: '\2605';
-    display: inline-block;
-    -webkit-font-smoothing: antialiased;
-    font: normal 16px/1 'dashicons';
-    vertical-align: top;
-}

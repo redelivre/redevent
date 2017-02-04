@@ -93,23 +93,16 @@ class Redevents {
     ));
   }
 
-  function create_eventcategory_taxonomy() {
-
-
-  }
-
-
-
   function tf_events_edit_columns($columns) {
 
     $columns = array(
         "cb" => "<input type=\"checkbox\" />",
+        "title" => "Event",
         "tf_col_ev_cat" => "Category",
         "tf_col_ev_date" => "Dates",
         "tf_col_ev_times" => "Times",
-        "tf_col_ev_thumb" => "Thumbnail",
-        "title" => "Event",
-        "tf_col_ev_desc" => "Description",
+        //"tf_col_ev_thumb" => "Thumbnail",
+        //"tf_col_ev_desc" => "Description",
         );
     return $columns;
   }
@@ -180,6 +173,7 @@ function tf_events_meta () {
 global $post;
 $custom = get_post_custom($post->ID);
 
+//var_dump($custom);
 if (array_key_exists('tf_events_startdate', $custom)){
   $meta_sd = $custom["tf_events_startdate"][0];
   $meta_st = $meta_sd;
@@ -193,6 +187,19 @@ if (array_key_exists('tf_events_enddate', $custom)){
   $meta_et = $meta_ed;
 }
 
+if (array_key_exists('tf_events_city', $custom)){
+  $city = $custom["tf_events_city"][0];
+}
+else{
+  $city = "";
+}
+
+if (array_key_exists('tf_events_state', $custom)){
+  $state = $custom["tf_events_state"][0];
+}
+else{
+  $state = "";
+}
 
 // - grab wp time format -
 
@@ -223,7 +230,7 @@ wp_create_nonce( 'tf-events-nonce' ) . '" />';
     <li><label>Data de Inicio</label>
       <p><input name="tf_events_startdate" class="tfdate calendar" value="<?php echo $clean_sd; ?>" /></p>
     </li>
-    <li><label>Horario de Inicio Time</label>
+    <li><label>Horario de Inicio</label>
       <p><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /></p>
       <em>Use o formato de 24h</em>
     </li>
@@ -233,6 +240,14 @@ wp_create_nonce( 'tf-events-nonce' ) . '" />';
 
     <li><label>Horario de Termino</label>
       <p><input name="tf_events_endtime" value="<?php echo $clean_et; ?>" /></p><em>Use o formato de 24h</em>
+    </li>
+
+    <li><label>Cidade</label>
+      <p><input name="tf_events_city" value="<?php echo $city; ?>" /></p>
+    </li>
+
+    <li><label>Estado</label>
+      <p><input name="tf_events_state" value="<?php echo $state; ?>" /></p>
     </li>
 </ul>
 </div>
@@ -265,6 +280,18 @@ return $post;
 endif;
 $updateendd = strtotime ( $_POST["tf_events_enddate"] . $_POST["tf_events_endtime"]);
 update_post_meta($post->ID, "tf_events_enddate", $updateendd );
+
+if(!isset($_POST["tf_events_city"])):
+return $post;
+endif;
+$city = isset($_POST["tf_events_city"])? $_POST["tf_events_city"]: "";
+update_post_meta($post->ID, "tf_events_city", $city);
+
+if(!isset($_POST["tf_events_state"])):
+return $post;
+endif;
+$city = isset($_POST["tf_events_state"])? $_POST["tf_events_state"]: "";
+update_post_meta($post->ID, "tf_events_state", $city);
 
 }
 
