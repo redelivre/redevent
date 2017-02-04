@@ -18,10 +18,18 @@ class Redevents {
   public function __construct(){
     add_action( 'init', array( $this , 'create_event_postype' ) );
     //add_action( 'init', array( $this , 'create_eventcategory_taxonomy'));
-    add_filter ('manage_edit-tf_events_columns', array( $this , 'tf_events_edit_columns' ) );
-    add_action ('manage_posts_custom_column', array( $this , 'tf_events_custom_columns') );
+    add_filter( 'manage_edit-tf_events_columns', array( $this , 'tf_events_edit_columns' ) );
+    add_action( 'manage_posts_custom_column', array( $this , 'tf_events_custom_columns') );
     add_action( 'admin_init', array( $this , 'tf_events_create' ) );
-    add_action ('save_post', array( $this, 'save_tf_events' ) );
+    add_action( 'save_post', array( $this, 'save_tf_events' ) );
+    add_filter( 'post_updated_messages', array( $this, 'events_updated_messages' ) );
+
+    add_action( 'admin_print_styles-post.php', array( $this , 'events_styles' ), 1000 );
+    add_action( 'admin_print_styles-post-new.php', array( $this , 'events_styles' ), 1000 );
+
+    add_action( 'admin_print_scripts-post.php', array( $this , 'events_scripts' ), 1000 );
+    add_action( 'admin_print_scripts-post-new.php', array( $this , 'events_scripts' ), 1000 );
+
   }
 
   function create_event_postype(){
@@ -47,7 +55,7 @@ class Redevents {
         'show_ui' => true,
         '_builtin' => false,
         'capability_type' => 'post',
-        //'menu_icon' => get_bloginfo('template_url').'/functions/images/event_16.png',
+        'menu_icon' => 'dashicons-calendar',
         'hierarchical' => false,
         'rewrite' => array( "slug" => "events" ),
         'supports'=> array('title', 'thumbnail', 'excerpt', 'editor') ,
@@ -112,6 +120,9 @@ class Redevents {
     $custom = get_post_custom();
     switch ($column)
     {
+      case "tf_col_ev_desc";
+          the_excerpt();
+      break;
       case "tf_col_ev_cat":
           // - show taxonomy terms -
           $eventcats = get_the_terms($post->ID, "tf_eventcategory");
@@ -153,10 +164,7 @@ class Redevents {
           echo $thumbnail;
           echo '&h=60&w=60&zc=1" alt="" />';
       }
-    break;
-    case "tf_col_ev_desc";
-        the_excerpt();
-    break;
+      break;
 
     }
   }
@@ -212,10 +220,20 @@ wp_create_nonce( 'tf-events-nonce' ) . '" />';
 ?>
 <div class="tf-meta">
 <ul>
-    <li><label>Start Date</label><input name="tf_events_startdate" class="tfdate" value="<?php echo $clean_sd; ?>" /></li>
-    <li><label>Start Time</label><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /><em>Use 24h format (7pm = 19:00)</em></li>
-    <li><label>End Date</label><input name="tf_events_enddate" class="tfdate" value="<?php echo $clean_ed; ?>" /></li>
-    <li><label>End Time</label><input name="tf_events_endtime" value="<?php echo $clean_et; ?>" /><em>Use 24h format (7pm = 19:00)</em></li>
+    <li><label>Data de Inicio</label>
+      <p><input name="tf_events_startdate" class="tfdate calendar" value="<?php echo $clean_sd; ?>" /></p>
+    </li>
+    <li><label>Horario de Inicio Time</label>
+      <p><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /></p>
+      <em>Use o formato de 24h</em>
+    </li>
+    <li><label>Data de Termino</label>
+      <p><input name="tf_events_enddate" class="tfdate" value="<?php echo $clean_ed; ?>" /></p>
+    </li>
+
+    <li><label>Horario de Termino</label>
+      <p><input name="tf_events_endtime" value="<?php echo $clean_et; ?>" /></p><em>Use o formato de 24h</em>
+    </li>
 </ul>
 </div>
 <?php
@@ -249,6 +267,51 @@ $updateendd = strtotime ( $_POST["tf_events_enddate"] . $_POST["tf_events_endtim
 update_post_meta($post->ID, "tf_events_enddate", $updateendd );
 
 }
+
+function events_updated_messages( $messages ) {
+
+  global $post, $post_ID;
+
+  $messages['tf_events'] = array(
+    0 => '', // Unused. Messages start at index 1.
+    1 => sprintf( __('Evento atualizado. <a href="%s">View item</a>'), esc_url( get_permalink($post_ID) ) ),
+    2 => __('Campo personalizado atualizado.'),
+    3 => __('Campo personalizado removido.'),
+    4 => __('Evento atualizado.'),
+    /* translators: %s: date and time of the revision */
+    5 => isset($_GET['revision']) ? sprintf( __('Evento recuperado para revisão de %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+    6 => sprintf( __('Evento publicado. <a href="%s">View event</a>'), esc_url( get_permalink($post_ID) ) ),
+    7 => __('Evento salvo.'),
+    8 => sprintf( __('Evento submetido. <a target="_blank" href="%s">Previsualizar evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
+    9 => sprintf( __('Evento agendado para: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Previsualizar evento</a>'),
+      // translators: Publish box date format, see http://php.net/date
+      date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
+    10 => sprintf( __('Rascunho de Evento atualizado. <a target="_blank" href="%s">Previsualizar Evento</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ) ),
+  );
+
+  return $messages;
+}
+
+function events_styles() {
+    global $post_type;
+    if( 'tf_events' != $post_type )
+        return;
+    wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/jquery-ui-1.8.9.custom.css');
+    wp_enqueue_style('ui-datepicker', plugin_dir_url( __FILE__ ) . 'css/tf-functions.css');
+
+}
+
+function events_scripts() {
+    global $post_type;
+    if( 'tf_events' != $post_type )
+        return;
+    wp_enqueue_script('jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui-1.8.9.custom.min.js', array('jquery'));
+    wp_enqueue_script('ui-datepicker', plugin_dir_url( __FILE__ ) . 'js/jquery.ui.datepicker.js');
+    wp_enqueue_script('custom_script', plugin_dir_url( __FILE__ ) .'js/pubforce-admin.js', array('jquery'));
+}
+
+
+
 
 }
 
