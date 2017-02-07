@@ -298,9 +298,50 @@ class Redevents {
         <p><input name="tf_events_city" value="<?php echo $city; ?>" /></p>
       </li>
 
-      <li><label>Estado</label>
-        <p><input name="tf_events_state" value="<?php echo $state; ?>" /></p>
-      </li>
+      <?php
+
+      $state_labels = array("Acre",
+                          "Alagoas",
+                          "Amapá",
+                          "Amazonas",
+                          "Bahia",
+                          "Ceará",
+                          "Distrito Federal",
+                          "Espírito Santo",
+                          "Goiás",
+                          "Maranhão",
+                          "Mato Grosso",
+                          "Mato Grosso do Sul",
+                          "Minas Gerais",
+                          "Pará",
+                          "Paraíba",
+                          "Paraná",
+                          "Pernambuco",
+                          "Piauí",
+                          "Rio de Janeiro",
+                          "Rio Grande do Norte",
+                          "Rio Grande do Sul",
+                          "Rondônia",
+                          "Roraima",
+                          "Santa Catarina",
+                          "São Paulo",
+                          "Sergipe",
+                          "Tocantins");
+      ?>
+
+      <p>Estado:
+      <select name="tf_events_state">
+      <?php
+      foreach ($state_labels as $state_data) {?>
+        <option <?php echo (($state==$state_data)?"selected":""); ?>
+          value="<?php echo $state_data; ?>">
+          <?php echo $state_data;?>
+        </option>';
+      <?php } ?>
+      ?>
+      </select>
+      </p>
+
   </ul>
   </div>
   <?php
