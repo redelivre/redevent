@@ -14,6 +14,8 @@
    Domain Path: /languages/
  */
 
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'wp-divi'. DIRECTORY_SEPARATOR .'modules.php';
+
 class Redevents {
   public function __construct(){
     add_action( 'init', array( $this , 'create_event_postype' ) );
@@ -30,6 +32,46 @@ class Redevents {
     add_action( 'admin_print_scripts-post.php', array( $this , 'events_scripts' ), 1000 );
     add_action( 'admin_print_scripts-post-new.php', array( $this , 'events_scripts' ), 1000 );
 
+    add_filter("the_content", array( $this , 'the_meta' ) );
+
+  }
+
+  function the_meta($content){
+    global $post_type;
+    global $post;
+
+    if( 'tf_events' == $post_type ){
+      $custom_fields = get_post_custom();
+
+      $new_content = "<br>";
+      foreach ( $custom_fields as $key => $value ) {
+        if($key == "tf_events_startdate" or $key == "tf_events_enddate"){
+          $value[0] = date("d-m-Y H:i", $value[0]);
+        }
+
+        if($key == "tf_events_startdate")
+          $key = "Data de Inicio";
+
+        if ($key == "tf_events_enddate") {
+          $key = "Data de Termino";
+        }
+
+        if ($key == "tf_events_city") {
+          $key = "Cidade";
+        }
+
+        if ($key == "tf_events_state") {
+          $key = "Estado";
+        }
+          if ($key == "_edit_last" or $key == "_edit_lock" or $key == "upload_file") {
+          continue;
+        }
+
+         $new_content .= "<label>" . $key . "</label>" . ": " . $value[0] . "<br />";
+      }
+      return $content.$new_content;
+    }
+    return $content;
   }
 
   function create_event_postype(){
@@ -185,7 +227,6 @@ class Redevents {
   global $post;
   $custom = get_post_custom($post->ID);
 
-  //var_dump($custom);
   if (array_key_exists('tf_events_startdate', $custom)){
     $meta_sd = $custom["tf_events_startdate"][0];
     $meta_st = $meta_sd;
@@ -215,7 +256,6 @@ class Redevents {
 
   // - grab wp time format -
 
-  $date_format = get_option('date_format'); // Not required in my code
   $time_format = get_option('time_format');
 
   // - populate today if empty, 00:00 for time -
@@ -240,7 +280,7 @@ class Redevents {
   <div class="tf-meta">
   <ul>
       <li><label>Data de Inicio</label>
-        <p><input name="tf_events_startdate" class="tfdate calendar" value="<?php echo $clean_sd; ?>" /></p>
+        <p><input name="tf_events_startdate" class="tfdate" value="<?php echo $clean_sd; ?>" /></p>
       </li>
       <li><label>Horario de Inicio</label>
         <p><input name="tf_events_starttime" value="<?php echo $clean_st; ?>" /></p>
