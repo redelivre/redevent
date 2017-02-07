@@ -184,13 +184,13 @@ class ET_Builder_Module_Redevents_Search extends ET_Builder_Module {
 		wp_enqueue_script('ui-datepicker', plugin_dir_url( __FILE__ ) . 'js/jquery.ui.datepicker.js');
 		wp_enqueue_script('custom_script', plugin_dir_url( __FILE__ ) .'js/pubforce-admin.js', array('jquery'));
 
-		var_dump($_POST);
 		$day = "";
 		$month = "";
 		$year = "";
-		if (array_key_exists("event", $_POST)) {
+		if (array_key_exists("date", $_POST)) {
 			$string_date = $_POST["date"];
-			list($day, $month , $year) = explode("/",$string_date);
+			if($string_date != "")
+			  list($day, $month , $year) = explode("/",$string_date);
 		}
 		$city = "";
 		if (array_key_exists("city",$_POST)) {
@@ -206,7 +206,7 @@ class ET_Builder_Module_Redevents_Search extends ET_Builder_Module {
 		}
 		$output .= '<form method="post" >';
 		 	$output .= '<p>';
-			$output .= 'Busca: <input type="text" name="event" value="'.$day.'">';
+			$output .= 'Busca: <input type="text" name="event" value="'.$event.'">';
 			$output .= '</p>';
 
 			$output .= '<p>Data: ';
@@ -247,7 +247,7 @@ class ET_Builder_Module_Redevents_Search extends ET_Builder_Module {
 													"Tocantins");
 
 			$output .= '<p>Estado: ';
-			$output .= '<select name="state">';
+			$output .= '<select name="state"><option value="">Nenhum</option>';
 			foreach ($state_labels as $state_data) {
 				$output .= '<option '.(($state==$state_data)?"selected":"").' value="'.$state_data.'">'.$state_data.'</option>';
 			}
@@ -259,32 +259,45 @@ class ET_Builder_Module_Redevents_Search extends ET_Builder_Module {
 	 		$output .= '</p>';
 		$output .= '</form>';
 
-		$date = date(strtotime("120 days"));
-		$today = date('Y-m-d H:i:s', strtotime("now"));
-
-		$date2 = date(mktime(0, 0, 0, 5, 8, 2017));
+		//$date = date(strtotime("120 days"));
+		//$today = date('Y-m-d H:i:s', strtotime("now"));
+		$date_array = "";
+		if($string_date != ""){
+			$date = date(mktime(0, 0, 0, $day, $month, $year));
+			$date_array = array(
+					'key'       => 'tf_events_startdate',
+					'value'     => $date,
+					'compare'   => '<=',
+			);
+		}
+		$city_array = "";
+		if($city != ""){
+			$city_array = array(
+							'key'       => 'tf_events_city',
+							'value'     => $city,
+							'compare'   => 'LIKE',
+					);
+		}
+		$state_array = "";
+		if ($state != "") {
+			$state_array = array(
+							'key'       => 'tf_events_state',
+							'value'     => $state,
+							'compare'   => 'LIKE',
+					);
+		}
 
 		$args = array(
-			"post_type" => "tf_events",
+			'post_type' => 'tf_events',
+			's' => $event,
 			'meta_query' => array(
 			    'relation' => 'OR',
-		        array(
-		            'key'       => 'tf_events_startdate',
-		            'value'     => $date,
-		            'compare'   => '<=',
-		        ),
-				array(
-		            'key'       => 'tf_events_city',
-		            'value'     => 'Campinas',
-		            'compare'   => 'LIKE',
-		        ),
-				array(
-		            'key'       => 'tf_events_state',
-		            'value'     => 'São Paulo',
-		            'compare'   => 'LIKE',
-		        ),
+		        $date_array,
+			      $city_array,
+						$state_array
 		    ),
 		);
+
 		$the_query = new WP_Query( $args );
 
 		// The Loop
