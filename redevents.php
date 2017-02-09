@@ -12,6 +12,7 @@
 
    Text Domain: redevents
    Domain Path: /languages/
+   References: http://www.noeltock.com/web-design/wordpress/custom-post-types-events-pt1/, http://www.noeltock.com/web-design/wordpress/how-to-custom-post-types-for-events-pt-2/
  */
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'wp-divi'. DIRECTORY_SEPARATOR .'modules.php';
