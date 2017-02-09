@@ -352,6 +352,9 @@ class Redevents {
 
   global $post;
 
+
+  if ($post == null)
+    return;
   // - still require nonce
 
   if ( !wp_verify_nonce( $_POST['tf-events-nonce'], 'tf-events-nonce' )) {
